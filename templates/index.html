@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачать видео с YouTube</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function showPreview() {
+            var url = document.getElementById('url').value;
+            var preview = document.getElementById('video-preview');
+            var loader = document.getElementById('loader');
+            var validUrl = /^(https:\/\/www\.youtube\.com\/watch\?v=|https:\/\/youtu\.be\/).*/.test(url);
+
+            if (validUrl) {
+                loader.style.display = 'block';
+
+                // Получаем идентификатор видео из URL
+                var videoId = url.split('v=')[1] || url.split('youtu.be/')[1];
+                var embedUrl = 'https://www.youtube.com/embed/' + videoId.split(/[?&]/)[0];
+
+                preview.src = embedUrl;
+                preview.style.display = 'block';
+
+                // Скрываем загрузчик после загрузки видео
+                preview.onload = function() {
+                    loader.style.display = 'none';
+                };
+            } else {
+                loader.style.display = 'none';
+                preview.style.display = 'none';
+                preview.src = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Скачать видео с YouTube</h1>
+    <form action="/download" method="POST">
+        <label for="url">Введите ссылку на видео:</label>
+        <input type="text" id="url" name="url" required oninput="showPreview()">
+        <button type="submit">Скачать</button>
+    </form>
+    <div id="loader" style="display:none;">Загрузка...</div>
+    <iframe id="video-preview" style="display:none; width:100%; height:315px;" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>
